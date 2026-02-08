@@ -1,0 +1,11 @@
+Lab 11A deliverables (same style as Lab 1A but serverless)
+
+Students must produce:
+    1) RDS instance in default VPC
+    2) Secret storing DB creds (Secrets Manager)
+    3) Lambda function (Python) with VPC attachment
+    4) API Gateway route that triggers Lambda
+    5) DB table created (one-time SQL script or bootstrap step)
+    6) Proof: curl request inserts a row
+
+
