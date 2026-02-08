@@ -4,12 +4,18 @@ Students must produce:
 
         1) RDS MySQL instance (in Default VPC)
             PubliclyAccessible = false
-        
+
+                aws rds describe-db-instances --db-instance-identifier "$DB_ID" \
+                  --query "DBInstances[0].PubliclyAccessible" --output text
+
         2) DB subnet placement
             in private subnets if available (Default VPC often has public subnets; we’ll control access via SG regardless)
         
         3) Security groups
             RDS SG allows 3306 only from Lambda SG
+
+                aws ec2 describe-security-groups --group-ids "$RDS_SG_ID" \
+                  --query "SecurityGroups[0].IpPermissions[?FromPort==\`3306\` && ToPort==\`3306\`]" --output json
         
         4) Secrets Manager secret
             JSON fields: username, password, host, port, dbname
@@ -17,13 +23,23 @@ Students must produce:
         5) Lambda function (Python)
             attached to VPC subnets + Lambda SG
             environment variables set
+
+                aws lambda get-function-configuration --function-name "$LAMBDA_NAME" \
+                  --query "VpcConfig" --output json
         
         6) API Gateway
             POST /intake integration to Lambda
-        
+
+                aws apigatewayv2 get-routes --api-id "$API_ID" --output table
+
         7) Database table
             audit_events created
         
         8) Proof artifacts
             CLI outputs + a successful curl that inserts a row
+
+        9) Cloudwatch Logs
+
+                aws logs describe-log-streams --log-group-name "/aws/lambda/$LAMBDA_NAME" \
+                  --order-by LastEventTime --descending --max-items 1 --output table
         
